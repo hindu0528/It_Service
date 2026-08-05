@@ -20,10 +20,16 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
 
-    # Build all Java backend services
+    # Build all Java backend services individually
     - name: Compile and Package Services
       run: |
-        mvn clean package -DskipTests
+        mvn clean package -DskipTests -f discovery-server/pom.xml
+        mvn clean package -DskipTests -f config-server/pom.xml
+        mvn clean package -DskipTests -f api-gateway/pom.xml
+        mvn clean package -DskipTests -f auth-service/pom.xml
+        mvn clean package -DskipTests -f ticket-service/pom.xml
+        mvn clean package -DskipTests -f attachment-service/pom.xml
+        mvn clean package -DskipTests -f notification-service/pom.xml
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
