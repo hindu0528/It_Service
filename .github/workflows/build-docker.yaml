@@ -25,7 +25,7 @@ jobs:
     # 3. Compile and build the Spring Boot JAR files
     - name: Compile and Package Services
       run: |
-        mvn clean package -DskipTests
+        mvn clean package -DskipTests -f discovery-server/pom.xml
 
     # 4. Log in to Docker Hub
     - name: Log in to Docker Hub
