@@ -1,0 +1,98 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Dedicated OpenAPI docs routing with SetPath to match downstream /v3/api-docs
+        - id: auth-service-docs
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/auth/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+        - id: ticket-service-docs
+          uri: lb://ticket-service
+          predicates:
+            - Path=/api/v1/tickets/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+        - id: attachment-service-docs
+          uri: lb://attachment-service
+          predicates:
+            - Path=/api/v1/attachments/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+        - id: notification-service-docs
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/notifications/v3/api-docs
+          filters:
+            - SetPath=/v3/api-docs
+
+        # Standard API routes with StripPrefix
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - StripPrefix=2
+
+        - id: ticket-service
+          uri: lb://ticket-service
+          predicates:
+            - Path=/api/v1/tickets/**
+          filters:
+            - StripPrefix=2
+
+        - id: attachment-service
+          uri: lb://attachment-service
+          predicates:
+            - Path=/api/v1/attachments/**
+          filters:
+            - StripPrefix=2
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/notifications/**
+          filters:
+            - StripPrefix=2
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Auth Service
+        url: /api/v1/auth/v3/api-docs
+      - name: Ticket Service
+        url: /api/v1/tickets/v3/api-docs
+      - name: Attachment Service
+        url: /api/v1/attachments/v3/api-docs
+      - name: Notification Service
+        url: /api/v1/notifications/v3/api-docs

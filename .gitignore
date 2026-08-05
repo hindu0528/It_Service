@@ -1,0 +1,42 @@
+# Maven
+**/target/
+*.jar
+*.war
+*.ear
+
+# Node.js
+**/node_modules/
+**/dist/
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+bin/
+tmp/
+
+# OS Files
+Thumbs.db
+db.webinterface
+Microsoft.XMLDocument
+.DS_Store
+ehthumbs.db
+
+# Log files
+*.log
+logs/
+**/logs/
+
+# Local configuration overrides
+.env
+.env.local
+.env.*.local

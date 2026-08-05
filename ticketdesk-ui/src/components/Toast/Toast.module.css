@@ -1,0 +1,35 @@
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  animation: slideUp 0.3s ease;
+}
+
+.success {
+  background-color: var(--success-500);
+  color: #ffffff;
+}
+
+.error {
+  background-color: var(--danger-500);
+  color: #ffffff;
+}
+
+.info {
+  background-color: var(--primary-500);
+  color: #ffffff;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
