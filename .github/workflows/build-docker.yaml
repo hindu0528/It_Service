@@ -47,11 +47,6 @@ jobs:
       id: vars
       run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-    # 4. Get the Git Commit SHA for traceable tagging
-    - name: Get Commit SHA
-      id: vars
-      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
     # 5. Build Java jar files (Only runs during 'apply')
     - name: Set up JDK 21
       if: ${{ github.event.inputs.terraform_action != 'destroy' }}
