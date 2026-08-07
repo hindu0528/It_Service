@@ -14,7 +14,7 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_service_discovery_private_dns_namespace" "main" {
   name        = "it-support.local"
   description = "Internal service discovery namespace"
-  vpc         = aws_vpc.main.id  # Changed from vpc_id to vpc
+  vpc         = aws_vpc.main.id
 }
 
 # ----------------- IAM ROLES -----------------
@@ -184,4 +184,3 @@ resource "aws_ecs_service" "config" {
 
   depends_on = [aws_alb_listener.config]
 }
-
