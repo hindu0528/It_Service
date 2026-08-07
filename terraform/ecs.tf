@@ -14,7 +14,7 @@ resource "aws_ecs_cluster" "main" {
 resource "aws_service_discovery_private_dns_namespace" "main" {
   name        = "it-support.local"
   description = "Internal service discovery namespace"
-  vpc_id      = aws_vpc.main.id
+  vpc         = aws_vpc.main.id  # Changed from vpc_id to vpc
 }
 
 # ----------------- IAM ROLES -----------------
