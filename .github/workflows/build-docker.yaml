@@ -29,7 +29,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    # 1. Configure AWS Credentials
+         # 1. Configure AWS Credentials
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -42,12 +42,10 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
-    # 3. Create ECR repositories automatically if they do not exist
-    - name: Create ECR Repositories if missing
-      run: |
-        for repo in discovery-server config-server api-gateway auth-service ticket-service attachment-service notification-service ticketdesk-ui; do
-          aws ecr describe-repositories --repository-names $repo --region ${{ secrets.AWS_REGION }} || aws ecr create-repository --repository-name $repo --region ${{ secrets.AWS_REGION }}
-        done
+    # 3. Get the Git Commit SHA for traceable tagging
+    - name: Get Commit SHA
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     # 4. Get the Git Commit SHA for traceable tagging
     - name: Get Commit SHA
