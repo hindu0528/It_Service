@@ -12,8 +12,9 @@ resource "aws_alb" "main" {
 # ----------------- TARGET GROUPS -----------------
 
 # Target Group: Frontend / Default
+# Target Group: Frontend / Default
 resource "aws_alb_target_group" "app" {
-  name_prefix = "tg-app"
+  name_prefix = "tg-ecs" # <-- Changed back to keep the existing target group
   port        = 80
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
