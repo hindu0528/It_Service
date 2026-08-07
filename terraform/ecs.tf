@@ -74,7 +74,8 @@ resource "aws_ecs_task_definition" "discovery" {
     environment = [
       { name = "EUREKA_INSTANCE_HOSTNAME", value = "discovery-server.it-support.local" },
       { name = "EUREKA_CLIENT_REGISTER_WITH_EUREKA", value = "false" },
-      { name = "EUREKA_CLIENT_FETCH_REGISTRY", value = "false" }
+      { name = "EUREKA_CLIENT_FETCH_REGISTRY", value = "false" },
+      { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" }
     ]
     logConfiguration = {
       logDriver = "awslogs"
@@ -182,4 +183,4 @@ resource "aws_ecs_service" "config" {
   }
 
   depends_on = [aws_alb_listener.config]
-}
+}
