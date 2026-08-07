@@ -1,10 +1,9 @@
 # ALB Security Group (Public-facing)
 resource "aws_security_group" "alb" {
-  name        = "ecs-fargate-alb-sg"
+  name_prefix = "ecs-fargate-alb-sg-" # Generates unique name
   description = "Access to the load balancer from the internet"
   vpc_id      = aws_vpc.main.id
 
-  # Allow inbound HTTP traffic from anywhere
   ingress {
     from_port   = 80
     to_port     = 80
@@ -12,7 +11,6 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow all outbound traffic (to target ECS tasks)
   egress {
     from_port   = 0
     to_port     = 0
@@ -27,11 +25,10 @@ resource "aws_security_group" "alb" {
 
 # ECS Tasks Security Group (Private)
 resource "aws_security_group" "ecs_tasks" {
-  name        = "ecs-fargate-tasks-sg"
+  name_prefix = "ecs-fargate-tasks-sg-" # Generates unique name
   description = "Access to the ECS tasks from the ALB only"
   vpc_id      = aws_vpc.main.id
 
-  # Allow inbound traffic ONLY from the ALB Security Group
   ingress {
     from_port       = 80
     to_port         = 80
@@ -39,7 +36,6 @@ resource "aws_security_group" "ecs_tasks" {
     security_groups = [aws_security_group.alb.id]
   }
 
-  # Allow all outbound traffic (for pulling container images, contacting DB/APIs)
   egress {
     from_port   = 0
     to_port     = 0
