@@ -1,12 +1,29 @@
 # ALB Security Group (Public-facing)
 resource "aws_security_group" "alb" {
-  name_prefix = "ecs-fargate-alb-sg-" # Generates unique name
+  name_prefix = "ecs-fargate-alb-sg-"
   description = "Access to the load balancer from the internet"
   vpc_id      = aws_vpc.main.id
 
+  # Port 80 (Frontend UI / Gateway)
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Port 8761 (Discovery Server UI)
+  ingress {
+    from_port   = 8761
+    to_port     = 8761
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Port 8888 (Config Server API)
+  ingress {
+    from_port   = 8888
+    to_port     = 8888
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -25,13 +42,14 @@ resource "aws_security_group" "alb" {
 
 # ECS Tasks Security Group (Private)
 resource "aws_security_group" "ecs_tasks" {
-  name_prefix = "ecs-fargate-tasks-sg-" # Generates unique name
+  name_prefix = "ecs-fargate-tasks-sg-"
   description = "Access to the ECS tasks from the ALB only"
   vpc_id      = aws_vpc.main.id
 
+  # Allow inbound traffic on any port from the ALB Security Group
   ingress {
-    from_port       = 80
-    to_port         = 80
+    from_port       = 0
+    to_port         = 65535
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
@@ -48,13 +66,10 @@ resource "aws_security_group" "ecs_tasks" {
   }
 }
 
-# Outputs for Security Groups
 output "alb_security_group_id" {
   value       = aws_security_group.alb.id
-  description = "ID of the ALB security group"
 }
 
 output "ecs_tasks_security_group_id" {
   value       = aws_security_group.ecs_tasks.id
-  description = "ID of the ECS tasks security group"
 }
