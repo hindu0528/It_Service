@@ -40,3 +40,11 @@ logs/
 .env
 .env.local
 .env.*.local
+
+
+# Terraform
+**/terraform/.terraform/
+**/terraform/.terraform.lock.hcl
+**/terraform/*.tfstate.backup
+**/terraform/*.tfvars
+**/terraform/*.tfvars.json
