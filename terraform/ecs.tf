@@ -183,4 +183,5 @@ resource "aws_ecs_service" "config" {
   }
 
   depends_on = [aws_alb_listener.config]
-}
+}
+
