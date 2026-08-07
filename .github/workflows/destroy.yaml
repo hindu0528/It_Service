@@ -1,0 +1,53 @@
+name: Destroy Infrastructure
+
+on:
+  workflow_dispatch:
+
+jobs:
+  destroy-infra:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    # 1. Configure AWS Credentials
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # 2. Setup Terraform on the runner
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.15.8"
+
+    # 3. Initialize Terraform
+    - name: Terraform Init
+      run: |
+        cd terraform
+        terraform init
+
+    # 4. Destroy all resources
+    - name: Run Terraform Destroy
+      run: |
+        cd terraform
+        terraform destroy -auto-approve -var="image_tag=latest"
+
+    # 5. Commit the cleared state file back to the repository
+    - name: Commit State File
+      if: always()
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add terraform/terraform.tfstate || true
+        git commit -m "Clean up Terraform state after destroy [skip ci]" || true
+        git push || true
