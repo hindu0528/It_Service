@@ -79,6 +79,8 @@ jobs:
         mvn clean package -f api-gateway/pom.xml
         mvn clean package -f auth-service/pom.xml
         mvn clean package -f ticket-service/pom.xml
+        mvn clean package -f attachment-service/pom.xml
+        mvn clean package -f notification-service/pom.xml
 
     # 6. ECR Login
     - name: Login to Amazon ECR
@@ -109,6 +111,12 @@ jobs:
 
         docker build -t ${{ steps.login-ecr.outputs.registry }}/ticket-service:${{ steps.vars.outputs.sha_short }} ./ticket-service
         docker push ${{ steps.login-ecr.outputs.registry }}/ticket-service:${{ steps.vars.outputs.sha_short }}
+
+        docker build -t ${{ steps.login-ecr.outputs.registry }}/attachment-service:${{ steps.vars.outputs.sha_short }} ./attachment-service
+        docker push ${{ steps.login-ecr.outputs.registry }}/attachment-service:${{ steps.vars.outputs.sha_short }}
+
+        docker build -t ${{ steps.login-ecr.outputs.registry }}/notification-service:${{ steps.vars.outputs.sha_short }} ./notification-service
+        docker push ${{ steps.login-ecr.outputs.registry }}/notification-service:${{ steps.vars.outputs.sha_short }}
 
     # 9. Run Terraform Apply or Destroy
     - name: Run Terraform Action
