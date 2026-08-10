@@ -1,6 +1,10 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+  cloud:
+    inetutils:
+      preferred-networks:
+        - 10.0.
 
 eureka:
   client:
