@@ -1,3 +1,8 @@
+# ECS Cluster
+resource "aws_ecs_cluster" "main" {
+  name = "ecs-fargate-cluster"
+}
+
 # Private DNS Namespace for service discovery
 resource "aws_service_discovery_private_dns_namespace" "main" {
   name        = "it-support.local"
