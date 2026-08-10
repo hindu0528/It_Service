@@ -83,7 +83,11 @@ resource "aws_service_discovery_service" "discovery_server" {
   name = "discovery-server"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id
-    dns_records { ttl = 10; type = "A" }
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+    routing_policy = "MULTIVALUE"
   }
 }
 
@@ -144,7 +148,11 @@ resource "aws_service_discovery_service" "config_server" {
   name = "config-server"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id
-    dns_records { ttl = 10; type = "A" }
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+    routing_policy = "MULTIVALUE"
   }
 }
 
@@ -203,7 +211,11 @@ resource "aws_service_discovery_service" "api_gateway" {
   name = "api-gateway"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id
-    dns_records { ttl = 10; type = "A" }
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+    routing_policy = "MULTIVALUE"
   }
 }
 
@@ -262,7 +274,11 @@ resource "aws_service_discovery_service" "auth_service" {
   name = "auth-service"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id
-    dns_records { ttl = 10; type = "A" }
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+    routing_policy = "MULTIVALUE"
   }
 }
 
@@ -321,7 +337,11 @@ resource "aws_service_discovery_service" "ticket" {
   name = "ticket-service"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id
-    dns_records { ttl = 10; type = "A" }
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+    routing_policy = "MULTIVALUE"
   }
 }
 
@@ -381,7 +401,11 @@ resource "aws_service_discovery_service" "attachment" {
   name = "attachment-service"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id
-    dns_records { ttl = 10; type = "A" }
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+    routing_policy = "MULTIVALUE"
   }
 }
 
@@ -441,7 +465,11 @@ resource "aws_service_discovery_service" "notification" {
   name = "notification-service"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.main.id
-    dns_records { ttl = 10; type = "A" }
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+    routing_policy = "MULTIVALUE"
   }
 }
 

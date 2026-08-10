@@ -126,7 +126,7 @@ jobs:
 
     # 10. Build & Upload Frontend to S3 (M4 Servicing)
     - name: Build & Sync React UI
-      if: ${{ github.event_name == 'push' || (github.event.inputs.terraform_action != 'destroy' && success()) }}
+      if: ${{ success() && (github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy') }}
       run: |
         cd ticketdesk-ui
         npm install
@@ -135,7 +135,7 @@ jobs:
 
     # 11. Run Post-Deployment Smoke Test (M6 Requirement)
     - name: Run URL Smoke Test
-      if: ${{ github.event_name == 'push' || (github.event.inputs.terraform_action != 'destroy' && success()) }}
+      if: ${{ success() && (github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy') }}
       run: |
         CF_URL="${{ steps.tf_run.outputs.cf_url }}"
         echo "Running smoke test against https://${CF_URL}..."
