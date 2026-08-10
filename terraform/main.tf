@@ -53,8 +53,8 @@ output "alb_hostname" {
 }
 
 output "cloudfront_domain_name" {
-  value       = aws_cloudfront_distribution.s3_distribution.domain_name
-  description = "The domain name of the CloudFront Frontend"
+  value       = aws_s3_bucket_website_configuration.frontend.website_endpoint
+  description = "The website hosting endpoint of the S3 bucket"
 }
 
 output "s3_bucket_name" {

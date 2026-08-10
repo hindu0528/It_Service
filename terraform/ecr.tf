@@ -21,3 +21,37 @@ resource "aws_ecr_repository" "repos" {
     Environment = "Dev"
   }
 }
+
+# Import blocks to automatically import existing repositories into state
+import {
+  to = aws_ecr_repository.repos["discovery-server"]
+  id = "discovery-server"
+}
+import {
+  to = aws_ecr_repository.repos["config-server"]
+  id = "config-server"
+}
+import {
+  to = aws_ecr_repository.repos["api-gateway"]
+  id = "api-gateway"
+}
+import {
+  to = aws_ecr_repository.repos["auth-service"]
+  id = "auth-service"
+}
+import {
+  to = aws_ecr_repository.repos["ticket-service"]
+  id = "ticket-service"
+}
+import {
+  to = aws_ecr_repository.repos["attachment-service"]
+  id = "attachment-service"
+}
+import {
+  to = aws_ecr_repository.repos["notification-service"]
+  id = "notification-service"
+}
+import {
+  to = aws_ecr_repository.repos["ticketdesk-ui"]
+  id = "ticketdesk-ui"
+}

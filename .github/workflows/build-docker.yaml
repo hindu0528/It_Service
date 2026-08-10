@@ -134,6 +134,8 @@ jobs:
     - name: Build & Sync React UI
       if: ${{ success() && (github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy') }}
       run: |
+        ALB_HOST=$(cd terraform && terraform output -raw alb_hostname)
+        sed -i "s|baseURL: '/api/v1'|baseURL: 'http://${ALB_HOST}/api/v1'|g" ticketdesk-ui/src/services/api.js
         cd ticketdesk-ui
         npm install
         npm run build
@@ -144,8 +146,8 @@ jobs:
       if: ${{ success() && (github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy') }}
       run: |
         CF_URL="${{ steps.tf_run.outputs.cf_url }}"
-        echo "Running smoke test against https://${CF_URL}..."
-        curl -f -k -s "https://${CF_URL}" || (echo "Smoke test failed to load CloudFront" && exit 1)
+        echo "Running smoke test against http://${CF_URL}..."
+        curl -f -k -s "http://${CF_URL}" || (echo "Smoke test failed to load website" && exit 1)
 
     # 12. Commit and save the state file
     - name: Commit State File
