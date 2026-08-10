@@ -308,7 +308,7 @@ resource "aws_ecs_task_definition" "auth" {
     secrets = [
       { name = "DB_PASSWORD", valueFrom = aws_secretsmanager_secret.db_password.arn },
       { name = "DB_USERNAME", valueFrom = aws_ssm_parameter.db_username.arn },
-      { name = "DB_URL", valueFrom = aws_ssm_parameter.db_url_auth.arn }
+      { name = "SPRING_DATASOURCE_URL", valueFrom = aws_ssm_parameter.db_url_auth.arn }
     ]
     logConfiguration = {
       logDriver = "awslogs"
@@ -372,7 +372,7 @@ resource "aws_ecs_task_definition" "ticket" {
     secrets = [
       { name = "DB_PASSWORD", valueFrom = aws_secretsmanager_secret.db_password.arn },
       { name = "DB_USERNAME", valueFrom = aws_ssm_parameter.db_username.arn },
-      { name = "DB_URL", valueFrom = aws_ssm_parameter.db_url_ticket.arn }
+      { name = "SPRING_DATASOURCE_URL", valueFrom = aws_ssm_parameter.db_url_ticket.arn }
     ]
     logConfiguration = {
       logDriver = "awslogs"
@@ -436,7 +436,7 @@ resource "aws_ecs_task_definition" "attachment" {
     secrets = [
       { name = "DB_PASSWORD", valueFrom = aws_secretsmanager_secret.db_password.arn },
       { name = "DB_USERNAME", valueFrom = aws_ssm_parameter.db_username.arn },
-      { name = "DB_URL", valueFrom = aws_ssm_parameter.db_url_attachment.arn }
+      { name = "SPRING_DATASOURCE_URL", valueFrom = aws_ssm_parameter.db_url_attachment.arn }
     ]
     logConfiguration = {
       logDriver = "awslogs"
