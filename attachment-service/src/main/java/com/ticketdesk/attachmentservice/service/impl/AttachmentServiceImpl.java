@@ -47,12 +47,12 @@ public class AttachmentServiceImpl implements AttachmentService {
 
         Attachment saved = attachmentRepository.save(attachment);
 
-        // Generate working Gateway preview URL for dev environment
-        String previewUrl = "http://localhost:8080/api/v1/attachments/preview/" + saved.getId();
-        saved.setPresignedUrl(previewUrl);
+        // Generate actual S3 presigned upload URL
+        String uploadUrl = storageService.generatePresignedUploadUrl(saved.getFileName(), saved.getFileType());
+        saved.setPresignedUrl(uploadUrl);
         attachmentRepository.save(saved);
 
-        log.info("Saved pending attachment entity with ID: {}, preview URL: {}", saved.getId(), previewUrl);
+        log.info("Saved pending attachment entity with ID: {}, upload URL: {}", saved.getId(), uploadUrl);
 
         return PresignUrlResponse.builder()
                 .attachmentId(saved.getId())
