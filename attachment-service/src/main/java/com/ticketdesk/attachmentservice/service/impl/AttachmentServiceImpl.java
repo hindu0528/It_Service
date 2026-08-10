@@ -34,8 +34,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Transactional
-    public PresignUrlResponse generatePresignedUrl(PresignUrlRequest request) {
-        log.info("Generating presigned URL for file: {}, size: {} bytes", request.getFileName(), request.getFileSize());
+        // Generate actual S3 presigned upload URL
+        String uploadUrl = storageService.generatePresignedUploadUrl(request.getFileName(), request.getFileType());
 
         Attachment attachment = Attachment.builder()
                 .ticketId(request.getTicketId())
@@ -43,14 +43,10 @@ public class AttachmentServiceImpl implements AttachmentService {
                 .fileType(request.getFileType())
                 .fileSize(request.getFileSize())
                 .status(AttachmentStatus.PENDING)
+                .presignedUrl(uploadUrl)
                 .build();
 
         Attachment saved = attachmentRepository.save(attachment);
-
-        // Generate actual S3 presigned upload URL
-        String uploadUrl = storageService.generatePresignedUploadUrl(saved.getFileName(), saved.getFileType());
-        saved.setPresignedUrl(uploadUrl);
-        attachmentRepository.save(saved);
 
         log.info("Saved pending attachment entity with ID: {}, upload URL: {}", saved.getId(), uploadUrl);
 
