@@ -34,6 +34,9 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Transactional
+    public PresignUrlResponse generatePresignedUrl(PresignUrlRequest request) {
+        log.info("Generating presigned URL for file: {}, size: {} bytes", request.getFileName(), request.getFileSize());
+
         // Generate actual S3 presigned upload URL
         String uploadUrl = storageService.generatePresignedUploadUrl(request.getFileName(), request.getFileType());
 
