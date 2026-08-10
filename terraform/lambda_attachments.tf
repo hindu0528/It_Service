@@ -12,11 +12,12 @@ resource "aws_s3_bucket_public_access_block" "attachments" {
   restrict_public_buckets = true
 }
 
-# Zip package for Lambda function
+# Zip package for Lambda function (includes index.js and node_modules)
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "${path.module}/../lambda/thumbnail.py"
+  source_dir  = "${path.module}/../lambda"
   output_path = "${path.module}/../lambda/thumbnail.zip"
+  excludes    = ["thumbnail.py", "thumbnail.txt", "thumbnail.zip"]
 }
 
 # IAM Role for Lambda
@@ -42,18 +43,16 @@ resource "aws_iam_role_policy_attachment" "lambda_s3" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
-# Lambda Function (Python 3.11 with Pillow Layer)
+# Lambda Function (Self-contained Node.js 18 with bundled Jimp)
 resource "aws_lambda_function" "thumbnail" {
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   function_name    = "ticketdesk-thumbnail-generator"
   role             = aws_iam_role.lambda_role.arn
-  handler          = "thumbnail.handler"
-  runtime          = "python3.11"
-  timeout          = 15
-
-  # Uses a public Klayers Pillow dependency Layer for Python 3.11 in us-east-1
-  layers = ["arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p311-Pillow:1"]
+  handler          = "index.handler"
+  runtime          = "nodejs18.x"
+  timeout          = 30
+  memory_size      = 512
 }
 
 # Give S3 permission to invoke the Lambda

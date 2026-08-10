@@ -54,6 +54,14 @@ resource "aws_security_group" "ecs_tasks" {
     security_groups = [aws_security_group.alb.id]
   }
 
+  # Allow all internal microservice communication
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    self      = true
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -63,6 +71,30 @@ resource "aws_security_group" "ecs_tasks" {
 
   tags = {
     Name = "ecs-fargate-tasks-sg"
+  }
+}
+
+# Database Security Group (RDS - Port 3306)
+resource "aws_security_group" "db_sg" {
+  name_prefix = "ecs-fargate-db-sg-"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ecs_tasks.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "ecs-fargate-db-sg"
   }
 }
 

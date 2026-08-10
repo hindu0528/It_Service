@@ -1,0 +1,9 @@
+{
+  "name": "thumbnail-generator",
+  "version": "1.0.0",
+  "description": "Thumbnail generator using Jimp",
+  "main": "index.js",
+  "dependencies": {
+    "jimp": "^0.22.0"
+  }
+}

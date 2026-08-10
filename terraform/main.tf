@@ -32,12 +32,19 @@ provider "aws" {
 
 variable "aws_region" {
   type    = string
-  default = "us-east-1"
+  default = "ap-south-2" # Set to ap-south-2 (Hyderabad) based on user environment
 }
 
 variable "image_tag" {
   type    = string
   default = "latest"
+}
+
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+locals {
+  ecr_registry = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com"
 }
 
 output "alb_hostname" {

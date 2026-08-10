@@ -49,6 +49,12 @@ jobs:
       with:
         terraform_version: "1.15.8"
 
+    # Install Node.js dependencies for Lambda thumbnail generator
+    - name: Install Lambda dependencies
+      run: |
+        cd lambda
+        npm install
+
     # 4. Terraform Init & Extract S3 Bucket Output
     - name: Terraform Init & Plan
       id: tf_setup
