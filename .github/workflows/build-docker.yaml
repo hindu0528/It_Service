@@ -1,4 +1,4 @@
-name: Build, Push and Deploy Infrastructure
+name: Build, Push, and Deploy System
 
 on:
   push:
@@ -19,7 +19,6 @@ jobs:
   build-push-deploy:
     runs-on: ubuntu-latest
 
-    # Permission to write/commit the state file back to the repo
     permissions:
       contents: write
 
@@ -29,7 +28,14 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
-         # 1. Configure AWS Credentials
+    # 1. Secret scanning (M6 Requirement)
+    - name: Scan for Committed Secrets
+      uses: trufflesecurity/trufflehog@main
+      with:
+        extra_args: --only-verified
+        path: ./
+
+    # 2. Configure AWS Credentials
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -37,44 +43,55 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    # 2. Log in to Amazon ECR
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
+    # 3. Setup Terraform
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.15.8"
 
-    # 3. Get the Git Commit SHA for traceable tagging
-    - name: Get Commit SHA
-      id: vars
-      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-    # 5. Build Java jar files (Only runs during 'apply')
+    # 4. Terraform Init & Extract S3 Bucket Output
+    - name: Terraform Init & Plan
+      id: tf_setup
+      run: |
+        cd terraform
+        terraform init
+        
+    # 5. Build Java Jars & Run Unit Tests (M6 Requirement)
     - name: Set up JDK 21
-      if: ${{ github.event.inputs.terraform_action != 'destroy' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy' }}
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: Compile and Package Services
-      if: ${{ github.event.inputs.terraform_action != 'destroy' }}
+    - name: Compile, Package & Test Backend Services
+      if: ${{ github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy' }}
       run: |
-        mvn clean package -DskipTests -f discovery-server/pom.xml
-        mvn clean package -DskipTests -f config-server/pom.xml
-        mvn clean package -DskipTests -f api-gateway/pom.xml
-        mvn clean package -DskipTests -f auth-service/pom.xml
-        mvn clean package -DskipTests -f ticket-service/pom.xml
-        mvn clean package -DskipTests -f attachment-service/pom.xml
-        mvn clean package -DskipTests -f notification-service/pom.xml
+        mvn clean package -f discovery-server/pom.xml
+        mvn clean package -f config-server/pom.xml
+        mvn clean package -f api-gateway/pom.xml
+        mvn clean package -f auth-service/pom.xml
+        mvn clean package -f ticket-service/pom.xml
 
-    # 6. Build and Push images to Amazon ECR (Only runs during 'apply')
+    # 6. ECR Login
+    - name: Login to Amazon ECR
+      if: ${{ github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy' }}
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    # 7. Get the Git Commit SHA
+    - name: Get Commit SHA
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    # 8. Build and Push images to ECR
     - name: Build and Push Docker Images
-      if: ${{ github.event.inputs.terraform_action != 'destroy' }}
+      if: ${{ github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy' }}
       run: |
         docker build -t ${{ steps.login-ecr.outputs.registry }}/discovery-server:${{ steps.vars.outputs.sha_short }} ./discovery-server
         docker push ${{ steps.login-ecr.outputs.registry }}/discovery-server:${{ steps.vars.outputs.sha_short }}
 
-        # FIXED: Context set to '.' (root) so Docker can access config-repo and config-server/pom.xml
         docker build -t ${{ steps.login-ecr.outputs.registry }}/config-server:${{ steps.vars.outputs.sha_short }} -f ./config-server/Dockerfile .
         docker push ${{ steps.login-ecr.outputs.registry }}/config-server:${{ steps.vars.outputs.sha_short }}
 
@@ -87,29 +104,9 @@ jobs:
         docker build -t ${{ steps.login-ecr.outputs.registry }}/ticket-service:${{ steps.vars.outputs.sha_short }} ./ticket-service
         docker push ${{ steps.login-ecr.outputs.registry }}/ticket-service:${{ steps.vars.outputs.sha_short }}
 
-        docker build -t ${{ steps.login-ecr.outputs.registry }}/attachment-service:${{ steps.vars.outputs.sha_short }} ./attachment-service
-        docker push ${{ steps.login-ecr.outputs.registry }}/attachment-service:${{ steps.vars.outputs.sha_short }}
-
-        docker build -t ${{ steps.login-ecr.outputs.registry }}/notification-service:${{ steps.vars.outputs.sha_short }} ./notification-service
-        docker push ${{ steps.login-ecr.outputs.registry }}/notification-service:${{ steps.vars.outputs.sha_short }}
-
-        docker build -t ${{ steps.login-ecr.outputs.registry }}/ticketdesk-ui:${{ steps.vars.outputs.sha_short }} ./ticketdesk-ui
-        docker push ${{ steps.login-ecr.outputs.registry }}/ticketdesk-ui:${{ steps.vars.outputs.sha_short }}
-
-        # 7. Setup Terraform on the runner
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: "1.15.8"
-
-    # 8. Initialize Terraform
-    - name: Terraform Init
-      run: |
-        cd terraform
-        terraform init
-
     # 9. Run Terraform Apply or Destroy
     - name: Run Terraform Action
+      id: tf_run
       run: |
         cd terraform
         ACTION="${{ github.event.inputs.terraform_action }}"
@@ -121,14 +118,35 @@ jobs:
           terraform destroy -auto-approve -var="image_tag=${{ steps.vars.outputs.sha_short }}"
         else
           terraform apply -auto-approve -var="image_tag=${{ steps.vars.outputs.sha_short }}"
+          
+          # Output outputs for S3 bucket upload
+          echo "s3_bucket=$(terraform output -raw s3_bucket_name)" >> $GITHUB_OUTPUT
+          echo "cf_url=$(terraform output -raw cloudfront_domain_name)" >> $GITHUB_OUTPUT
         fi
 
-    # 10. Commit the updated state file back to the repository
+    # 10. Build & Upload Frontend to S3 (M4 Servicing)
+    - name: Build & Sync React UI
+      if: ${{ github.event_name == 'push' || (github.event.inputs.terraform_action != 'destroy' && success()) }}
+      run: |
+        cd ticketdesk-ui
+        npm install
+        npm run build
+        aws s3 sync dist/ s3://${{ steps.tf_run.outputs.s3_bucket }} --delete
+
+    # 11. Run Post-Deployment Smoke Test (M6 Requirement)
+    - name: Run URL Smoke Test
+      if: ${{ github.event_name == 'push' || (github.event.inputs.terraform_action != 'destroy' && success()) }}
+      run: |
+        CF_URL="${{ steps.tf_run.outputs.cf_url }}"
+        echo "Running smoke test against https://${CF_URL}..."
+        curl -f -k -s "https://${CF_URL}" || (echo "Smoke test failed to load CloudFront" && exit 1)
+
+    # 12. Commit and save the state file
     - name: Commit State File
       if: always()
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add terraform/terraform.tfstate || true
-        git commit -m "Update Terraform state [skip ci]" || true
+        git commit -m "Update Terraform state after build [skip ci]" || true
         git push || true
