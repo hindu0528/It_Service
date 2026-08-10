@@ -103,7 +103,7 @@ resource "aws_ecs_task_definition" "discovery" {
     name      = "discovery-server"
     image     = "${local.ecr_registry}/discovery-server:${var.image_tag}"
     essential = true
-    portMappings = [{ containerPort = 8761; hostPort = 8761 }]
+    portMappings = [{ containerPort = 8761, hostPort = 8761 }]
     environment = [
       { name = "EUREKA_INSTANCE_HOSTNAME", value = "discovery-server.it-support.local" },
       { name = "EUREKA_CLIENT_REGISTER_WITH_EUREKA", value = "false" },
@@ -168,7 +168,7 @@ resource "aws_ecs_task_definition" "config" {
     name      = "config-server"
     image     = "${local.ecr_registry}/config-server:${var.image_tag}"
     essential = true
-    portMappings = [{ containerPort = 8888; hostPort = 8888 }]
+    portMappings = [{ containerPort = 8888, hostPort = 8888 }]
     environment = [
       { name = "SPRING_PROFILES_ACTIVE", value = "native" },
       { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" }
@@ -231,7 +231,7 @@ resource "aws_ecs_task_definition" "gateway" {
     name      = "api-gateway"
     image     = "${local.ecr_registry}/api-gateway:${var.image_tag}"
     essential = true
-    portMappings = [{ containerPort = 8080; hostPort = 8080 }]
+    portMappings = [{ containerPort = 8080, hostPort = 8080 }]
     environment = [
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
       { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" }
@@ -294,7 +294,7 @@ resource "aws_ecs_task_definition" "auth" {
     name      = "auth-service"
     image     = "${local.ecr_registry}/auth-service:${var.image_tag}"
     essential = true
-    portMappings = [{ containerPort = 8085; hostPort = 8085 }]
+    portMappings = [{ containerPort = 8085, hostPort = 8085 }]
     environment = [
       { name = "SPRING_PROFILES_ACTIVE", value = "dev" },
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
@@ -358,7 +358,7 @@ resource "aws_ecs_task_definition" "ticket" {
     name      = "ticket-service"
     image     = "${local.ecr_registry}/ticket-service:${var.image_tag}"
     essential = true
-    portMappings = [{ containerPort = 8082; hostPort = 8082 }]
+    portMappings = [{ containerPort = 8082, hostPort = 8082 }]
     environment = [
       { name = "SPRING_PROFILES_ACTIVE", value = "dev" },
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
@@ -422,7 +422,7 @@ resource "aws_ecs_task_definition" "attachment" {
     name      = "attachment-service"
     image     = "${local.ecr_registry}/attachment-service:${var.image_tag}"
     essential = true
-    portMappings = [{ containerPort = 8084; hostPort = 8084 }]
+    portMappings = [{ containerPort = 8084, hostPort = 8084 }]
     environment = [
       { name = "SPRING_PROFILES_ACTIVE", value = "dev" },
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
@@ -485,7 +485,7 @@ resource "aws_ecs_task_definition" "notification" {
     name      = "notification-service"
     image     = "${local.ecr_registry}/notification-service:${var.image_tag}"
     essential = true
-    portMappings = [{ containerPort = 8083; hostPort = 8083 }]
+    portMappings = [{ containerPort = 8083, hostPort = 8083 }]
     environment = [
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
       { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" }
