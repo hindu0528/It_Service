@@ -239,7 +239,8 @@ resource "aws_ecs_task_definition" "gateway" {
     portMappings = [{ containerPort = 8080, hostPort = 8080 }]
     environment = [
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
-      { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" }
+      { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" },
+      { name = "SPRING_CLOUD_INETUTILS_PREFERRED_NETWORKS", value = "10.0." }
     ]
     logConfiguration = {
       logDriver = "awslogs"
@@ -305,7 +306,8 @@ resource "aws_ecs_task_definition" "auth" {
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
       { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" },
       { name = "SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT", value = "org.hibernate.dialect.MySQLDialect" },
-      { name = "SPRING_JPA_DATABASE_PLATFORM", value = "org.hibernate.dialect.MySQLDialect" }
+      { name = "SPRING_JPA_DATABASE_PLATFORM", value = "org.hibernate.dialect.MySQLDialect" },
+      { name = "SPRING_CLOUD_INETUTILS_PREFERRED_NETWORKS", value = "10.0." }
     ]
     secrets = [
       { name = "DB_PASSWORD", valueFrom = aws_secretsmanager_secret.db_password.arn },
@@ -371,7 +373,8 @@ resource "aws_ecs_task_definition" "ticket" {
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
       { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" },
       { name = "SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT", value = "org.hibernate.dialect.MySQLDialect" },
-      { name = "SPRING_JPA_DATABASE_PLATFORM", value = "org.hibernate.dialect.MySQLDialect" }
+      { name = "SPRING_JPA_DATABASE_PLATFORM", value = "org.hibernate.dialect.MySQLDialect" },
+      { name = "SPRING_CLOUD_INETUTILS_PREFERRED_NETWORKS", value = "10.0." }
     ]
     secrets = [
       { name = "DB_PASSWORD", valueFrom = aws_secretsmanager_secret.db_password.arn },
@@ -437,7 +440,8 @@ resource "aws_ecs_task_definition" "attachment" {
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
       { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" },
       { name = "SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT", value = "org.hibernate.dialect.MySQLDialect" },
-      { name = "SPRING_JPA_DATABASE_PLATFORM", value = "org.hibernate.dialect.MySQLDialect" }
+      { name = "SPRING_JPA_DATABASE_PLATFORM", value = "org.hibernate.dialect.MySQLDialect" },
+      { name = "SPRING_CLOUD_INETUTILS_PREFERRED_NETWORKS", value = "10.0." }
     ]
     secrets = [
       { name = "DB_PASSWORD", valueFrom = aws_secretsmanager_secret.db_password.arn },
@@ -499,7 +503,8 @@ resource "aws_ecs_task_definition" "notification" {
     portMappings = [{ containerPort = 8083, hostPort = 8083 }]
     environment = [
       { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" },
-      { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" }
+      { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" },
+      { name = "SPRING_CLOUD_INETUTILS_PREFERRED_NETWORKS", value = "10.0." }
     ]
     logConfiguration = {
       logDriver = "awslogs"
