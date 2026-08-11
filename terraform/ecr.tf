@@ -22,5 +22,3 @@ resource "aws_ecr_repository" "repos" {
     Environment = "Dev"
   }
 }
-
-
