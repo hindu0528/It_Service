@@ -61,6 +61,13 @@ jobs:
       run: |
         cd terraform
         terraform init
+
+    # 4.5. Ensure ECR Repositories exist before pushing images
+    - name: Create ECR Repositories
+      if: ${{ github.event_name == 'push' || github.event.inputs.terraform_action != 'destroy' }}
+      run: |
+        cd terraform
+        terraform apply -auto-approve -target=aws_ecr_repository.repos -var="image_tag=latest"
         
     # 5. Build Java Jars & Run Unit Tests (M6 Requirement)
     - name: Set up JDK 21
