@@ -28,7 +28,12 @@ resource "aws_alb_target_group" "discovery" {
   target_type = "ip"
 
   health_check {
-    path = "/"
+    path                = "/"
+    matcher             = "200"
+    interval            = 60
+    timeout             = 30
+    healthy_threshold   = 2
+    unhealthy_threshold = 5
   }
 }
 

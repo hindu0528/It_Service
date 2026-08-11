@@ -101,8 +101,8 @@ resource "aws_ecs_task_definition" "discovery" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = "512"
+  memory                   = "1024"
 
   container_definitions = jsonencode([{
     name      = "discovery-server"
@@ -112,8 +112,7 @@ resource "aws_ecs_task_definition" "discovery" {
     environment = [
       { name = "EUREKA_INSTANCE_HOSTNAME", value = "discovery-server.it-support.local" },
       { name = "EUREKA_CLIENT_REGISTER_WITH_EUREKA", value = "false" },
-      { name = "EUREKA_CLIENT_FETCH_REGISTRY", value = "false" },
-      { name = "SPRING_CLOUD_CONFIG_URI", value = "http://config-server.it-support.local:8888" }
+      { name = "EUREKA_CLIENT_FETCH_REGISTRY", value = "false" }
     ]
     logConfiguration = {
       logDriver = "awslogs"
