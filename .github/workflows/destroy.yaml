@@ -36,13 +36,22 @@ jobs:
         cd terraform
         terraform init
 
-    # 4. Destroy all resources
+    # 4. Pre-cleanup S3 Buckets to prevent destruction timeouts
+    - name: Clean up S3 Buckets
+      run: |
+        BUCKETS=$(aws s3api list-buckets --query "Buckets[?starts_with(Name, 'ticketdesk-')].Name" --output text || true)
+        for b in $BUCKETS; do
+          echo "Emptying bucket $b..."
+          aws s3 rm "s3://$b" --recursive || true
+        done
+
+    # 5. Destroy all infrastructure resources
     - name: Run Terraform Destroy
       run: |
         cd terraform
         terraform destroy -auto-approve -var="image_tag=latest"
 
-    # 5. Commit the cleared state file back to the repository
+    # 6. Commit the cleared state file back to the repository
     - name: Commit State File
       if: always()
       run: |
