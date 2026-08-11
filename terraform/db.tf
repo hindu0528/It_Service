@@ -59,4 +59,5 @@ resource "aws_db_instance" "main" {
   db_subnet_group_name   = aws_db_subnet_group.db_subnets.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
   skip_final_snapshot    = true
+  deletion_protection    = false
 }

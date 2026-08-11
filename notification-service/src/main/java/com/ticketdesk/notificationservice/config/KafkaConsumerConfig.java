@@ -1,6 +1,7 @@
 package com.ticketdesk.notificationservice.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -12,6 +13,7 @@ import org.springframework.util.backoff.FixedBackOff;
 @Slf4j
 @Configuration
 @EnableKafka
+@ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true", matchIfMissing = true)
 public class KafkaConsumerConfig {
 
     @Bean
