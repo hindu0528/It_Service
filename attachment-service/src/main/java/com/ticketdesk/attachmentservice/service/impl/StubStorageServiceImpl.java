@@ -33,4 +33,9 @@ public class StubStorageServiceImpl implements StorageService {
     public int getPresignedUrlExpirationSeconds() {
         return EXPIRATION_SECONDS;
     }
+
+    @Override
+    public void uploadToS3(String fileName, String fileType, byte[] bytes) {
+        log.info("StubStorageServiceImpl: Simulated S3 upload for file '{}' ({} bytes)", fileName, bytes != null ? bytes.length : 0);
+    }
 }
