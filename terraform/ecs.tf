@@ -440,7 +440,9 @@ resource "aws_ecs_task_definition" "attachment" {
       { name = "EUREKA_CLIENT_SERVICEURL_DEFAULTZONE", value = "http://discovery-server.it-support.local:8761/eureka/" },
       { name = "SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT", value = "org.hibernate.dialect.MySQLDialect" },
       { name = "SPRING_JPA_DATABASE_PLATFORM", value = "org.hibernate.dialect.MySQLDialect" },
-      { name = "SPRING_CLOUD_INETUTILS_PREFERRED_NETWORKS", value = "10.0." }
+      { name = "SPRING_CLOUD_INETUTILS_PREFERRED_NETWORKS", value = "10.0." },
+      { name = "S3_BUCKET_NAME", value = aws_s3_bucket.attachments_bucket.id },
+      { name = "AWS_REGION", value = data.aws_region.current.name }
     ]
     secrets = [
       { name = "DB_PASSWORD", valueFrom = aws_secretsmanager_secret.db_password.arn },

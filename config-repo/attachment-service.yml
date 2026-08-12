@@ -15,6 +15,11 @@ spring:
 jwt:
   secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
 
+aws:
+  s3:
+    bucket-name: ${S3_BUCKET_NAME:}
+    region: ${AWS_REGION:ap-south-2}
+
 resilience4j:
   circuitbreaker:
     instances:

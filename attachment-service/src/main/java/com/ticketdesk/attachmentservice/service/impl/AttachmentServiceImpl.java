@@ -93,6 +93,13 @@ public class AttachmentServiceImpl implements AttachmentService {
         saved.setPresignedUrl("http://localhost:8080/api/v1/attachments/preview/" + saved.getId());
         Attachment updated = attachmentRepository.save(saved);
 
+        // Upload file to S3 under uploads/ to trigger Lambda thumbnail generator
+        try {
+            storageService.uploadToS3(fileName, fileType, bytes);
+        } catch (Exception e) {
+            log.error("Failed to upload file to S3: {}", e.getMessage(), e);
+        }
+
         log.info("Successfully stored binary attachment ID: {} ({}) in database", updated.getId(), updated.getFileName());
         return attachmentMapper.attachmentToAttachmentResponse(updated);
     }
