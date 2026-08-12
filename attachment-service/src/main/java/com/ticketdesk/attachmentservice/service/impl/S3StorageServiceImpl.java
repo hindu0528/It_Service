@@ -21,10 +21,10 @@ import java.util.UUID;
 @Primary
 public class S3StorageServiceImpl implements StorageService {
 
-    @Value("${aws.s3.bucket-name:}")
+    @Value("${S3_BUCKET_NAME:${aws.s3.bucket-name:}}")
     private String bucketName;
 
-    @Value("${aws.s3.region:ap-south-2}")
+    @Value("${AWS_REGION:${aws.s3.region:ap-south-2}}")
     private String awsRegion;
 
     private static final int EXPIRATION_SECONDS = 900; // 15 minutes
