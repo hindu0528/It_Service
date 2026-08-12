@@ -91,11 +91,6 @@
             <artifactId>s3</artifactId>
             <version>2.25.15</version>
         </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3-presigner</artifactId>
-            <version>2.25.15</version>
-        </dependency>
 
         <!-- JWT -->
         <dependency>
