@@ -48,3 +48,7 @@ logs/
 **/terraform/*.tfstate.backup
 **/terraform/*.tfvars
 **/terraform/*.tfvars.json
+
+# Local Personal Reference Files
+TicketDesk_AWS_Interview_QA_Guide.docx
+TicketDesk_AWS_Interview_QA_Guide.md
